@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>معادلة المرايا والتكبير</title>
+<style>
+  :root {
+    --c1: #6EE7F9; --c2: #A78BFA; --c3: #F472B6; --c4: #FBBF24;
+    --text: #FFFFFF; --glass-border: rgba(255, 255, 255, 0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: Tahoma, Arial, sans-serif; color: var(--text);
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(167,139,250,.55) 0%, transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(110,231,249,.45) 0%, transparent 40%),
+      radial-gradient(circle at 50% 90%, rgba(244,114,182,.45) 0%, transparent 45%),
+      #0F172A;
+    background-attachment: fixed;
+  }
+  header {
+    margin: 12px; padding: 12px 18px; border-radius: 16px;
+    display: flex; justify-content: space-between; font-size: 16px; font-weight: bold;
+    background: rgba(15, 23, 42, .85); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0,0,0,.25);
+  }
+  .stage { flex: 1; min-height: 0; overflow: auto; padding: 8px 16px 16px; }
+  .sheet {
+    max-width: 640px; margin: 0 auto; padding: 24px; border-radius: 24px;
+    background: rgba(15, 23, 42, .82); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+    box-shadow: 0 16px 48px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  h2 { font-size: 22px; margin-bottom: 12px; color: #FFFFFF; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+  p, li { font-size: 17px; line-height: 1.9; color: #FFFFFF; }
+  ul { padding-right: 22px; }
+  .eq {
+    direction: ltr; text-align: center; font-size: 18px; font-weight: bold;
+    margin: 12px 0; padding: 12px; border-radius: 14px;
+    background: rgba(2, 6, 23, .9); border: 1px solid var(--glass-border); color: #FFFFFF;
+  }
+  .calc { direction: ltr; text-align: left; font-size: 17px; margin: 4px 0; color: #FDE68A; font-weight: bold; }
+  .note { font-size: 16px; color: #E2E8F0; margin-top: 8px; }
+  footer {
+    margin: 12px; padding: 10px 14px; border-radius: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(15, 23, 42, .85); border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  footer button {
+    font-family: inherit; font-size: 15px; font-weight: bold; color: #0F172A;
+    padding: 9px 18px; border: none; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(90deg, var(--c1), var(--c2));
+    box-shadow: 0 6px 18px rgba(110, 231, 249, .35);
+  }
+  footer button:disabled { opacity: .35; cursor: default; box-shadow: none; }
+  #cnt { font-size: 15px; direction: ltr; color: #FFFFFF; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<header><span>معادلة المرايا والتكبير</span><span>وسام غازي</span></header>
+
+<div class="stage"><div class="sheet" id="sheet"></div></div>
+
+<footer>
+  <button id="prev">السابق</button>
+  <span id="cnt"></span>
+  <button id="next">التالي</button>
+</footer>
+
+<script>
+(function () {
+  var cards = [
+    { h: "الصورة الحقيقية",
+      body: "<p>تتكون من التقاء الأشعة المنعكسة فعلاً، ونقدر نشوفها على شاشة نحطها في مكانها.</p>" },
+    { h: "الصورة الوهمية",
+      body: "<p>تتكون من التقاء امتدادات الأشعة المنعكسة، وما نقدر نجمعها على شاشة.</p>" },
+    { h: "الطريقة الهندسية",
+      body: "<ul><li>الشعاع الموازي للمحور ينعكس ويمر بالبؤرة F.</li><li>الشعاع اللي يمر بالبؤرة ينعكس موازي للمحور.</li></ul>" },
+    { h: "أنواع الصور في المرآة المقعرة",
+      body: "<ul><li>إذا بعد الجسم أكبر من بعد مركز التكور: صورة حقيقية ومقلوبة ومصغرة.</li><li>إذا الجسم بين F و C: صورة حقيقية ومقلوبة ومكبرة، وموقعها خلف C.</li><li>إذا الجسم بين البؤرة والمرآة: صورة وهمية.</li></ul>" },
+    { h: "معادلة المرايا",
+      body: "<p>مقلوب البعد البؤري = مقلوب بعد الجسم + مقلوب بعد الصورة.</p><div class=\"eq\">1/f = 1/di + 1/do</div><p>هذي المعادلة تقريبية، وتنطبق على الأشعة القريبة من المحور.</p>" },
+    { h: "البعد البؤري",
+      body: "<div class=\"eq\">f = r / 2</div><p>r هو نصف قطر التكور.</p>" },
+    { h: "التكبير",
+      body: "<p>التكبير = طول الصورة ÷ طول الجسم.</p><div class=\"eq\">m = hi / ho = − di / do</div><p>إذا di موجبة يطلع التكبير سالب، يعني الصورة مقلوبة.</p>" },
+    { h: "الزوغان الكروي",
+      body: "<p>الأشعة البعيدة عن المحور ما تلتقي عند البؤرة نفسها، فتطلع الصورة مو واضحة.</p><ul><li>يقل إذا قللنا ارتفاع المرآة بالنسبة لنصف قطر تكورها.</li><li>التلسكوبات الكبيرة تستخدم مرايا مكافئية.</li></ul>" },
+    { h: "تطبيق: تلسكوب هابل",
+      body: "<p>ناسا أطلقت تلسكوب هابل عام 1990، وبعد الإطلاق مباشرة لقوا فيه زوغان كروي. وعام 1993 سوّوا له تصحيحات بصرية اسمها COSTAR.</p>" },
+    { h: "منظار جريجوريان",
+      body: "<p>فيه مرآتين مقعرتين: وحدة كبيرة وحدة صغيرة. تكوّن صورة حقيقية ومعتدلة مثل الجسم بالضبط.</p>" },
+    { h: "المثال: المعطيات",
+      body: "<p>جسم طوله ho = 2.0 cm، بعده عن المرآة do = 30.0 cm، ونصف قطر تكور المرآة r = 20.0 cm.</p><p>المطلوب: بعد الصورة di وطولها hi.</p><p class=\"note\">نحدد المعلوم والمجهول أول، عشان نعرف أي قانون نستخدم.</p>" },
+    { h: "المثال: البعد البؤري",
+      body: "<div class=\"eq\">f = r / 2 = 20.0 / 2 = 10.0 cm</div><p class=\"note\">معادلة المرايا تحتاج f، والمعطى عندنا r، فنحسب f من r.</p>" },
+    { h: "المثال: بعد الصورة",
+      body: "<div class=\"eq\">di = f·do / (do − f)</div><div class=\"eq\">= (10.0)(30.0) / (30.0 − 10.0) = 15.0 cm</div><p class=\"note\">di موجبة، يعني الصورة حقيقية وتتكون أمام المرآة.</p>" },
+    { h: "المثال: طول الصورة",
+      body: "<div class=\"eq\">m = −di / do = −15.0 / 30.0 = −0.5</div><div class=\"eq\">hi = m × ho = −0.5 × 2.0 = −1.0 cm</div><p class=\"note\">الإشارة السالبة تعني الصورة مقلوبة، و|m| أقل من 1 تعني الصورة مصغرة.</p>" },
+    { h: "المثال: تقويم الجواب",
+      body: "<ul><li>الوحدات كلها بالسنتمتر، وهي صحيحة.</li><li>الموقع الموجب والطول السالب يتفقون مع الرسم.</li></ul><p><b>الجواب:</b> di = 15.0 cm، و hi = −1.0 cm. الصورة حقيقية ومقلوبة ومصغرة.</p>" }
+  ];
+
+  var sheet = document.getElementById('sheet');
+  var cnt = document.getElementById('cnt');
+  var prev = document.getElementById('prev');
+  var next = document.getElementById('next');
+  var cur = 0;
+
+  function render() {
+    var c = cards[cur];
+    sheet.innerHTML = '<h2>' + c.h + '</h2>' + c.body;
+    cnt.textContent = (cur + 1) + ' / ' + cards.length;
+    prev.disabled = cur === 0;
+    next.disabled = cur === cards.length - 1;
+    document.querySelector('.stage').scrollTop = 0;
+  }
+  function go(n) { cur = Math.max(0, Math.min(cards.length - 1, n)); render(); }
+
+  prev.addEventListener('click', function () { go(cur - 1); });
+  next.addEventListener('click', function () { go(cur + 1); });
+
+  var sx = null;
+  document.body.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+  document.body.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx; sx = null;
+    if (Math.abs(dx) > 40) go(dx < 0 ? cur - 1 : cur + 1);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') go(cur + 1);
+    if (e.key === 'ArrowRight') go(cur - 1);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
